@@ -4,24 +4,25 @@ import numpy as np
 Array = np.ndarray
 
 def to_one_hot(y: Array, num_classes: int) -> Array:
-    oh = np.zeros((y.shape[0], num_classes), dtype=np.float32)
+    oh = np.zeros((y.shape[0], num_classes), dtype=np.float64)
     oh[np.arange(y.shape[0]), y] = 1.0
     return oh
 
 def softmax(z: Array) -> Array:
-    z = z - np.max(z, axis=1, keepdims=True)
-    exp = np.exp(z, dtype=np.float32)
+     z = np.asarray(z, dtype=np.float64)
+     z = z - np.max(z, axis=1, keepdims=True)
+     exp = np.exp(z)
     return exp / np.sum(exp, axis=1, keepdims=True)
 
 def cross_entropy(probs: Array, y_true_oh: Array) -> Array:
-    p = np.clip(probs, 1e-7, 1.0 - 1e-7)
+    p = np.clip(np.asarray(probs, dtype=np.float64), 1e-12, 1.0 - 1e-12)
     return -np.sum(y_true_oh * np.log(p), axis=1)
 
 class LayerDense:
     def __init__(self, n_inputs: int, n_neurons: int, rng: np.random.Generator):
         limit = np.sqrt(6.0 / (n_inputs + n_neurons))
-        self.weights = rng.uniform(-limit, limit, size=(n_inputs, n_neurons)).astype(np.float32)
-        self.biases = np.zeros((1, n_neurons), dtype=np.float32)
+        self.weights = rng.uniform(-limit, limit, size=(n_inputs, n_neurons)).astype(np.float64)
+        self.biases = np.zeros((1, n_neurons), dtype=np.float64)
         self.dweights = np.zeros_like(self.weights)
         self.dbiases = np.zeros_like(self.biases)
         self.inputs = None
@@ -32,7 +33,7 @@ class LayerDense:
         self.b_v = np.zeros_like(self.biases)
 
     def forward(self, inputs: Array) -> None:
-        self.inputs = inputs
+        self.inputs = np.asarray(inputs, dtype=np.float64)
         self.output = inputs @ self.weights + self.biases
 
     def backward(self, dvalues: Array) -> None:
@@ -42,7 +43,7 @@ class LayerDense:
 
 class ReLU:
     def forward(self, inputs: Array) -> None:
-        self.inputs = inputs
+        self.inputs = np.asarray(inputs, dtype=np.float64)
         self.output = np.maximum(0.0, inputs)
 
     def backward(self, dvalues: Array) -> None:

@@ -9,7 +9,9 @@ dependencies = [
   "numpy>=1.26",
   "pandas>=2.2",
   "scikit-learn>=1.5",
-  "tqdm>=4.66"
+  "tqdm>=4.66",
+  "torch>=2.0",
+  "matplotlib>=3.8"
 ]
 
 [tool.pytest.ini_options]

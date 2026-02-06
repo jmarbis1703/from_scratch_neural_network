@@ -1,48 +1,37 @@
 import sys
 import matplotlib.pyplot as plt
-from final_project.data.titanic import load_titanic
 from final_project.data.mnist import load_mnist
 from final_project.models.nn_scratch import NNClassifier
 
-def train_titanic():
-    print("--- Running  Demo ---")
-    data = load_titanic()
-    model = NNClassifier(input_dim=data.X_train.shape[1], hidden=16, num_classes=2)
-    model.fit(data.X_train, data.y_train, data.X_val, data.y_val, epochs=200)
+def run_demo():
+    print("From-Scratch Neural Network Demo")
+    print("Dataset: MNIST (784 dimensions, 10 classes)")
+    print("Architecture: 784 -> 64 -> 10")
+    print("Optimizer: Custom Adam Implementation")
+    print("-" * 40)
 
-def train_mnist():
-    print("--- Running MNIST Demo (High-Dimensional) ---")
-    # Load
-    data = load_mnist() # 784 features
+    data = load_mnist() 
     
-    # Initialize (784 -> 64 -> 10)
     model = NNClassifier(input_dim=784, hidden=64, num_classes=10, lr=0.005)
     
-    # Train
+    print("\nStarting Training")
     model.fit(data.X_train, data.y_train, data.X_val, data.y_val, epochs=15, patience=2)
     
-    # Plot
+
+    print("\nGenerating training report")
     history = model.history
     plt.figure(figsize=(10, 5))
-    plt.plot([x['train_loss'] for x in history], label='Train Loss')
-    plt.plot([x['val_loss'] for x in history], label='Val Loss')
-    plt.title('NumPy Neural Net on MNIST')
-    plt.xlabel('Epoch'); plt.ylabel('Loss'); plt.legend()
-    plt.savefig('mnist_training_curve.png')
-    print("\n✅ Training complete. Plot saved to 'mnist_training_curve.png'.")
+    plt.plot([x['train_loss'] for x in history], label='Train Loss', linewidth=2)
+    plt.plot([x['val_loss'] for x in history], label='Val Loss', linewidth=2, linestyle='--')
+    plt.title('Training Dynamics: NumPy vs MNIST')
+    plt.xlabel('Epoch'); plt.ylabel('Cross Entropy Loss'); plt.legend(); grid=True
+    
+    output_path = 'mnist_training_curve.png'
+    plt.savefig(output_path)
+    print(f" Demo Complete. Loss curve saved to '{output_path}'.")
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python -m final_project.cli [titanic|mnist]")
-        return
-    
-    command = sys.argv[1]
-    if command == "titanic":
-        train_titanic()
-    elif command == "mnist":
-        train_mnist()
-    else:
-        print(f"Unknown command: {command}")
+    run_demo()
 
 if __name__ == "__main__":
     main()

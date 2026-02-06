@@ -1,18 +1,48 @@
-from __future__ import annotations
-from .data.titanic import load_titanic
-from .models.nn_scratch import NNClassifier
-from .eval.metrics import binary_report
+import sys
+import matplotlib.pyplot as plt
+from final_project.data.titanic import load_titanic
+from final_project.data.mnist import load_mnist
+from final_project.models.nn_scratch import NNClassifier
 
-def fast_titanic(seed: int = 42) -> None:
-    data = load_titanic(seed=seed)
-    Xtr, Xva, Xte = data.X_train, data.X_val, data.X_test
-    ytr, yva, yte = data.y_train, data.y_val, data.y_test
+def train_titanic():
+    print("--- Running  Demo ---")
+    data = load_titanic()
+    model = NNClassifier(input_dim=data.X_train.shape[1], hidden=16, num_classes=2)
+    model.fit(data.X_train, data.y_train, data.X_val, data.y_val, epochs=200)
 
-    model = NNClassifier(input_dim=Xtr.shape[1], hidden=16, num_classes=2, seed=seed, lr=5e-3)
-    model.fit(Xtr, ytr, Xva, yva, epochs=50, batch_size=64, patience=5, seed=seed)
+def train_mnist():
+    print("--- Running MNIST Demo (High-Dimensional) ---")
+    # Load
+    data = load_mnist() # 784 features
+    
+    # Initialize (784 -> 64 -> 10)
+    model = NNClassifier(input_dim=784, hidden=64, num_classes=10, lr=0.005)
+    
+    # Train
+    model.fit(data.X_train, data.y_train, data.X_val, data.y_val, epochs=15, patience=2)
+    
+    # Plot
+    history = model.history
+    plt.figure(figsize=(10, 5))
+    plt.plot([x['train_loss'] for x in history], label='Train Loss')
+    plt.plot([x['val_loss'] for x in history], label='Val Loss')
+    plt.title('NumPy Neural Net on MNIST')
+    plt.xlabel('Epoch'); plt.ylabel('Loss'); plt.legend()
+    plt.savefig('mnist_training_curve.png')
+    print("\n✅ Training complete. Plot saved to 'mnist_training_curve.png'.")
 
-    proba = model.predict_proba(Xte)[:, 1]
-    print(binary_report(yte, proba))
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python -m final_project.cli [titanic|mnist]")
+        return
+    
+    command = sys.argv[1]
+    if command == "titanic":
+        train_titanic()
+    elif command == "mnist":
+        train_mnist()
+    else:
+        print(f"Unknown command: {command}")
 
 if __name__ == "__main__":
-    fast_titanic()
+    main()

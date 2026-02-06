@@ -1,23 +1,37 @@
-# From-Scratch Neural Network
+# From-Scratch Deep Learning Engine (NumPy)
 
-**From-scratch NumPy implementation of a feedforward neural network, applied to Titanic survival prediction.**  
-This project demonstrates backpropagation coded by hand (no ML frameworks), mini-batch gradient descent with Adam, early stopping, and reproducibility checks.  
+**A pure NumPy implementation of a Deep Neural Network, featuring custom Backpropagation, Adam Optimization, and PyTorch verification.**
+A deep learning training engine built from scratch to demonstrate the mathematical foundations of neural networks—no TensorFlow or PyTorch for the core logic.
 
-Highlights:
-- Emphasizes the math and statistics behind neural nets. 
-- From-scratch NN (NumPy) with tested backprop (gradient check).
-- No data leakage: split, fit scaler on train, transform val&test.
-- Mini-batch, shuffling, early stopping, Adam optimizer.
-- Fast demo notebook runs in < 2 minutes on CPU (subset).
+## Key Features
+- **Custom Training Engine**: Vectorized forward and backward propagation using NumPy
+- **Adam Optimizer**: Built from scratch without external libraries
+- **Verified Accuracy**: Gradients mathematically validated against PyTorch
+- **Real Performance**: Achieves >95% accuracy on MNIST handwritten digits
 
-## Quickstart (fast)
+## Quickstart
+
+### 1. Install
 ```bash
-python -m final_project.cli fast-titanic
+pip install -e .
 ```
-If `Titanic Dataset.csv` is not present, the script generates a small synthetic dataset so the pipeline still runs.
 
+### 2.  Run the Demo
+Train the network on the MNIST dataset(784 -> 64 -> 10)
+```bash
+python -m final_project.cli
+```
+Outputs mnist_training_curve.png showing loss convergence.
 
-
+### 3. Verify Math / Gradient Check
+Run the comparison script to prove the NumPy gradients match PyTorch's auto diff engine.
+``` bash
+pytest tests/compare_torch.py
+```
+## Implementation Details
+- **LayerDense**: Implements He Initialization and caches inputs for the backward pass.
+- **Backpropagation**: Calculates partial derivatives via the Chain Rule, passing error terms,dinputs, backward layer by layer.
+- **Unit Tests**: Includes finite difference gradient checks and PyTorch equivalence tests.
 
 
 

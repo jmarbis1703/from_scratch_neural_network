@@ -4,27 +4,30 @@ import numpy as np
 Array = np.ndarray
 
 def to_one_hot(y: Array, num_classes: int) -> Array:
+    """Converts integer class labels to one-hot encoded vectors."""
     oh = np.zeros((y.shape[0], num_classes), dtype=np.float64)
     oh[np.arange(y.shape[0]), y] = 1.0
     return oh
 
 def softmax(z: Array) -> Array:
+    """Computes stable softmax values for each set of scores in z."""
     z = np.asarray(z, dtype=np.float64)
-    z = z - np.max(z, axis=1, keepdims=True) 
+    z = z - np.max(z, axis=1, keepdims=True)  
     exp = np.exp(z)
     return exp / np.sum(exp, axis=1, keepdims=True)
 
 def cross_entropy(probs: Array, y_true_oh: Array) -> float:
+    """Calculates Mean Cross Entropy Loss."""
     p = np.clip(np.asarray(probs, dtype=np.float64), 1e-12, 1.0 - 1e-12)
     return -np.sum(y_true_oh * np.log(p)) / y_true_oh.shape[0]
 
 class LayerDense:
+    """ Fully connected layer implementing He Initialization and Adam optimizer state."""
     def __init__(self, n_inputs: int, n_neurons: int, rng: np.random.Generator):
         limit = np.sqrt(2.0 / n_inputs)
         self.weights = rng.normal(0.0, limit, size=(n_inputs, n_neurons)).astype(np.float64)
         self.biases = np.zeros((1, n_neurons), dtype=np.float64)
         
-        # Gradients
         self.dweights = np.zeros_like(self.weights)
         self.dbiases = np.zeros_like(self.biases)
         
@@ -37,16 +40,19 @@ class LayerDense:
         self.b_v = np.zeros_like(self.biases)
 
     def forward(self, inputs: Array) -> None:
+        """ Forward pass. """
         self.inputs = np.asarray(inputs, dtype=np.float64)
         self.output = self.inputs @ self.weights + self.biases
 
     def backward(self, dvalues: Array) -> Array:
+        """ Backward pass. Calculates gradients and returns error for previous layer. """
         dvalues = np.asarray(dvalues, dtype=np.float64)
         self.dweights = self.inputs.T @ dvalues
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
         return dvalues @ self.weights.T
 
 class ReLU:
+    """Rectified Linear Unit activation."""
     def forward(self, inputs: Array) -> None:
         self.inputs = np.asarray(inputs, dtype=np.float64)
         self.output = np.maximum(0.0, self.inputs)
@@ -56,6 +62,7 @@ class ReLU:
         return dvalues * (self.inputs > 0.0)
 
 class OptimizerAdam:
+    """ Adam Optimizer implementation. """
     def __init__(self, lr: float = 1e-3, beta1: float = 0.9, beta2: float = 0.999, eps: float = 1e-8):
         self.lr = lr
         self.b1 = beta1
@@ -109,25 +116,21 @@ class NNClassifier:
 
             for i in range(0, len(Xb_shuffled), batch_size):
                 xb = Xb_shuffled[i : i + batch_size]
-                yb = yb_shuffled[i : i + batch_size]
-                
-                # Forward
+                yb = yb_shuffled[i : i + batch_size]      
+              
                 logits = self._forward_logits(xb)
                 
-                # Backward (Softmax + CE combined gradient)
                 dlogits = (softmax(logits) - yb) / yb.shape[0]
                 d_l2 = self.l2.backward(dlogits)
                 d_a1 = self.a1.backward(d_l2)
                 _    = self.l1.backward(d_a1)
 
-               
                 self.opt.update_params(self.l1)
                 self.opt.update_params(self.l2)
 
             # Evaluation
             tr_loss = cross_entropy(self.predict_proba(X_tr), y_tr_oh)
             va_loss = cross_entropy(self.predict_proba(X_va), y_va_oh)
-            
             acc = np.mean(self.predict(X_va) == y_va)
             
             print(f"Epoch {epoch+1:02d}: Train Loss {tr_loss:.4f}, Val Loss {va_loss:.4f}, Val Acc {acc:.4f}")

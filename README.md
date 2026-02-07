@@ -47,14 +47,21 @@ print(f"Max Gradient Difference: {diff:.9f}")
 ### 1. Installation
 The core enging requires only NumPy.
 ``` bash
-git clone [https://github.com/jmarbis1703/from_scratch_neural_network.git](https://github.com/jmarbis1703/from_scratch_neural_network.git)
+git clone https://github.com/jmarbis1703/from_scratch_neural_network.git
 cd from_scratch_neural_network
 
-# Install core engine
+# Create and activate a virtual environment
+# On Mac/Linux:
+python3 -m venv venv
+source venv/bin/activate
+
+# On Windows (PowerShell):
+# python -m venv venv
+# .\venv\Scripts\Activate
+
+# Install core engine (NumPy Only)
 pip install -e .
 
-# (Optional) Install PyTorch only if you want to run the verification tests
-pip install -e ".[dev]"
 ```
 
 ### 2. Training
@@ -65,6 +72,10 @@ python -m final_project.cli
 ### 3. Run Gradient Check
 Verify the backpropagation calculus:
 ``` bash
+# Install PyTorch only if you want to run the verification tests
+pip install -e ".[dev]"
+
+# Run the comparison test
 pytest tests/compare_torch.py
 ```
 

@@ -43,6 +43,7 @@ Run the comparison script to prove the NumPy gradients match PyTorch's autodiff 
 pytest tests/compare_torch.py
 ```
 ## Project Structure
+```
 from_scratch_neural_network/
 ├── src/final_project/
 │   ├── models/nn_scratch.py   # Core: LayerDense, ReLU, Adam, Softmax
@@ -55,7 +56,7 @@ from_scratch_neural_network/
 │   └── test_softmax_loss.py   # Unit tests for loss functions
 ├── pyproject.toml             # Dependencies
 └── README.md
-
+```
 ## Implementation Details
 - **LayerDense**: Implements He initialization and caches inputs for the backward pass
 - **Backpropagation**: Calculates partial derivatives via the chain rule, passing error terms (`dinputs`) backward layer by layer

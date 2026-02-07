@@ -24,11 +24,14 @@ cd from_scratch_neural_network
 # Create and activate virtual environment (Linux/Mac)
 python3 -m venv venv
 source venv/bin/activate
+# Windows: .\venv\Scripts\activate
 
-# Install dependencies (NumPy, PyTorch for verification, etc.)
+# Install core dependencies (Lightweight - NumPy only)
 pip install -e .
+
+# Optional: Install with PyTorch to run verification tests
+pip install -e ".[dev]"
 ```
-Windows Users: The activation command differs on Windows. Run .\venv\Scripts\activate instead of source venv/bin/activate.
 
 ### 2. Run the Demo
 Train the network on the MNIST dataset (784 → 64 → 10):

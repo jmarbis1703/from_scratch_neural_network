@@ -12,6 +12,12 @@ A deep learning training engine built from scratch to demonstrate the mathematic
 - **Verified Accuracy**: Gradients mathematically validated against PyTorch
 - **Real Performance**: Achieves >95% accuracy on MNIST handwritten digits
 
+<p align="center">
+  <img src="mnist_training_curve.png" alt="MNIST Training Loss Curve" width="600">
+  <br>
+  <i>Figure 1: Training loss decreasing over time, showing model convergence.</i>
+</p>
+
 ## Quickstart
 
 ### 1. Installation 

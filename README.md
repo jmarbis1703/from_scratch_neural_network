@@ -2,7 +2,6 @@
 
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![License MIT](https://img.shields.io/badge/license-MIT-green.svg)
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)
 ![Dependencies](https://img.shields.io/badge/dependencies-lightweight-orange)
 
 **A mathematically rigorous deep learning framework built entirely in NumPy.**

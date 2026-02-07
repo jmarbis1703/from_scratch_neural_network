@@ -128,6 +128,7 @@ class NNClassifier:
                 d_a1 = self.a1.backward(d_l2)
                 _    = self.l1.backward(d_a1)
 
+                self.opt.step()
                 self.opt.update_params(self.l1)
                 self.opt.update_params(self.l2)
 

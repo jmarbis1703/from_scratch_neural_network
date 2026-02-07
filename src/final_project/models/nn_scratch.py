@@ -70,8 +70,11 @@ class OptimizerAdam:
         self.eps = eps
         self.t = 0
 
-    def update_params(self, layer: LayerDense) -> None:
+    def step(self):
+        """Increments the time step once per batch."""
         self.t += 1
+
+    def update_params(self, layer: LayerDense) -> None:
         for w, dw, m, v in (
             (layer.weights, layer.dweights, layer.w_m, layer.w_v),
             (layer.biases, layer.dbiases, layer.b_m, layer.b_v),

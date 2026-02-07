@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import torch
 import torch.nn as nn
 from final_project.models.nn_scratch import LayerDense, ReLU, softmax, cross_entropy

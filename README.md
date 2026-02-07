@@ -1,63 +1,105 @@
-# From-Scratch Deep Learning Engine (NumPy)
+# NumPy Neural Engine: Deep Learning from First Principles
+
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![License MIT](https://img.shields.io/badge/license-MIT-green.svg)
+![Dependencies](https://img.shields.io/badge/dependencies-lightweight-orange)
 
-**A pure NumPy implementation of a Deep Neural Network, featuring custom backpropagation, Adam optimization, and PyTorch verification.**
+**A mathematically rigorous deep learning framework built entirely in NumPy.**
 
-A deep learning training engine built from scratch to demonstrate the mathematical foundations of neural networks—no TensorFlow or PyTorch for the core logic.
+A deep learning framework built entirely in NumPy, implementing automatic differentiation, optimization, and weight initialization without relying on autograd frameworks.
 
-## Key Features
-- **Custom Training Engine**: Vectorized forward and backward propagation using NumPy
-- **Adam Optimizer**: Built from scratch without external libraries
-- **Verified Accuracy**: Gradients mathematically validated against PyTorch
-- **Real Performance**: Achieves >95% accuracy on MNIST handwritten digits
+Gradients have been verified against PyTorch's Autograd to within `1e-9` precision.
 
-## Quickstart
+##  Core Features
 
-### 1. Installation 
-Clone the repo and set up a virtual environment:
-```bash
-# Clone the repo
-git clone [https://github.com/jmarbis1703/from_scratch_neural_network.git](https://github.com/jmarbis1703/from_scratch_neural_network.git)
+* **Vectorized Backpropagation:** Manual chain rule implementation with efficient batched gradient computation.
+* **Adam Optimizer:** — From-scratch implementation following the Kingma & Ba paper, with explicit momentum (`beta1`) and RMSProp (`beta2`) updates.
+* **He Initialization:** Proper weight scaling for ReLU networks to avoid vanishing/exploding gradients.
+* **Tested & Typed:** Unit tests, gradient verification suite, type hints, and CI/CD.
+
+## Results
+
+Benchmarked on MNIST with a (784 → 64 → 10 architecture).
+
+| Metric | Result |
+| :--- | :--- |
+| **Accuracy** | >96% (Validation) |
+| **Convergence** | < 10 Epochs |
+| **Gradient Check** | **Verified vs PyTorch** |
+
+<p align="center">
+  <img src="mnist_training_curve.png" alt="Training Curve" width="600">
+  <br>
+  <i>Figure 1: Cross-Entropy Loss convergence using custom Adam optimizer.</i>
+</p>
+
+### Gradient Verification (PyTorch)
+To prove the math is correct, I wrote a test suite that initializes this engine and a PyTorch model with identical weights, feeds the same batch, and compares the gradients.
+
+```python
+# from tests/compare_torch.py
+diff = np.abs(grad_custom - grad_pt).max()
+print(f"Max Gradient Difference: {diff:.9f}")
+# Output: Max Gradient Difference: 0.000000000
+```
+
+## Getting Started 
+### 1. Installation
+The core enging requires only NumPy.
+``` bash
+git clone https://github.com/jmarbis1703/from_scratch_neural_network.git
 cd from_scratch_neural_network
 
-# Create and activate virtual environment (Linux/Mac)
+# Create and activate a virtual environment
+# On Mac/Linux:
 python3 -m venv venv
 source venv/bin/activate
 
-# Install dependencies (NumPy, PyTorch for verification, etc.)
-pip install -e .
-```
-Windows Users: The activation command differs on Windows. Run .\venv\Scripts\activate instead of source venv/bin/activate.
+# On Windows (PowerShell):
+# python -m venv venv
+# .\venv\Scripts\Activate
 
-### 2. Run the Demo
-Train the network on the MNIST dataset (784 → 64 → 10):
-```bash
+# Install core engine (NumPy Only)
+pip install -e .
+
+```
+
+### 2. Training
+Train the model on MNIST:
+``` bash
 python -m final_project.cli
 ```
-Outputs `mnist_training_curve.png` showing loss convergence.
+### 3. Run Gradient Check
+Verify the backpropagation calculus:
+``` bash
+# Install PyTorch only if you want to run the verification tests
+pip install -e ".[dev]"
 
-### 3. Verify Math / Gradient Check
-Run the comparison script to prove the NumPy gradients match PyTorch's autodiff engine:
-```bash
+# Run the comparison test
 pytest tests/compare_torch.py
 ```
-## Project Structure
-from_scratch_neural_network/
-├── src/final_project/
-│   ├── models/nn_scratch.py   # Core: LayerDense, ReLU, Adam, Softmax
-│   ├── data/mnist.py          # Data loading & preprocessing
-│   ├── eval/metrics.py        # Classification reports
-│   └── cli.py                 # Training entry point
-├── tests/
-│   ├── compare_torch.py       # PyTorch vs NumPy verification
-│   ├── test_grad_check.py     # Finite difference checks
-│   └── test_softmax_loss.py   # Unit tests for loss functions
-├── pyproject.toml             # Dependencies
-└── README.md
 
-## Implementation Details
-- **LayerDense**: Implements He initialization and caches inputs for the backward pass
-- **Backpropagation**: Calculates partial derivatives via the chain rule, passing error terms (`dinputs`) backward layer by layer
-- **Optimizer** Custom implementation of Adam with momentum and RMSProp correction.
-- **Unit Tests**: Includes finite difference gradient checks and PyTorch equivalence tests
+## Implementation Detail: The Adam Step
+The optimizer logic was built to mirror the original Kingma & Ba (2014):
+``` python
+# from src/final_project/models/nn_scratch.py
+m[...] = self.b1 * m + (1.0 - self.b1) * dw
+v[...] = self.b2 * v + (1.0 - self.b2) * (dw * dw)
+m_hat = m / (1.0 - self.b1 ** self.t)
+v_hat = v / (1.0 - self.b2 ** self.t)
+w[...] -= self.lr * m_hat / (np.sqrt(v_hat) + self.eps)
+```
+## Project Structure
+```
+├── src/final_project/
+│   ├── models/nn_scratch.py   # The Engine (Layers, Optimizer, Backprop)
+│   ├── data/mnist.py          # Data Pipeline
+│   └── eval/metrics.py        # Performance Metrics
+├── tests/
+│   ├── compare_torch.py       # PyTorch Parity Tests (The standard)
+│   └── test_grad_check.py     # Finite Difference Checks
+```
+
+
+
+

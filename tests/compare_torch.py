@@ -1,11 +1,21 @@
 import numpy as np
+import pytest
 import torch
 import torch.nn as nn
 from final_project.models.nn_scratch import LayerDense, ReLU, softmax, cross_entropy
 
+try:
+    import torch
+    import torch.nn as nn
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    
+# Verifies that the custom NumPy implementation produces IDENTICAL gradients to PyTorch when initialized with the same weights.
+# Skip this entire test function if Torch is not installed
 
-#   Verifies that the custom NumPy implementation produces IDENTICAL gradients to PyTorch when initialized with the same weights.
-def test_compare_vs_pytorch(): ## 
+@pytest.mark.skipif(not TORCH_AVAILABLE, reason="PyTorch not installed. Install with '.[dev]' to run this test.")
+def test_compare_vs_pytorch(): 
     print("\n PyTorch Comparison Test ")
     
     N, D_in, H, D_out = 64, 50, 32, 3

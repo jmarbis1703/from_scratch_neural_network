@@ -10,8 +10,13 @@ dependencies = [
   "pandas>=2.2",
   "scikit-learn>=1.5",
   "tqdm>=4.66",
-  "torch>=2.0",
   "matplotlib>=3.8"
+]
+
+[project.optional-dependencies]
+dev = [
+"torch>=2.0",
+"pytest"
 ]
 
 [tool.pytest.ini_options]

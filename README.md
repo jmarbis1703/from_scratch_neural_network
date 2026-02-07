@@ -6,20 +6,20 @@
 
 **A mathematically rigorous deep learning framework built entirely in NumPy.**
 
-This project is not just a model; it is a **training engine**. It implements the core primitives of deep learning—automatic differentiation logic, optimization algorithms, and weight initialization—without relying on autograd frameworks like PyTorch or TensorFlow for the heavy lifting.
+A deep learning framework built entirely in NumPy, implementing automatic differentiation, optimization, and weight initialization without relying on autograd frameworks.
 
-> **Engineering Highlight:** The gradients calculated by this engine have been mathematically verified to match PyTorch's Autograd to within `1e-9` precision.
+Gradients have been verified against PyTorch's Autograd to within `1e-9` precision.
 
 ##  Core Features
 
-* **Vectorized Backpropagation:** Manual implementation of the chain rule for efficient gradient calculation across batches.
-* **Custom Optimizer:** A from-scratch implementation of **Adam** (Adaptive Moment Estimation), explicitly handling momentum (`beta1`) and RMSProp (`beta2`) parameter updates.
-* **Weight Initialization:** Implements **He Initialization** to prevent vanishing/exploding gradients in ReLU networks.
-* **Production Standards:** Structured as a proper Python package with CI/CD pipelines, unit tests, and type hinting.
+* **Vectorized Backpropagation:** Manual chain rule implementation with efficient batched gradient computation.
+* **Adam Optimizer:** — From-scratch implementation following the Kingma & Ba paper, with explicit momentum (`beta1`) and RMSProp (`beta2`) updates.
+* **He Initialization:** Proper weight scaling for ReLU networks to avoid vanishing/exploding gradients.
+* **Tested & Typed:** Unit tests, gradient verification suite, type hints, and CI/CD.
 
-## Performance & Verification
+## Results
 
-The engine was benchmarked on the MNIST dataset (784 → 64 → 10 architecture).
+Benchmarked on MNIST with a (784 → 64 → 10 architecture).
 
 | Metric | Result |
 | :--- | :--- |
@@ -33,8 +33,8 @@ The engine was benchmarked on the MNIST dataset (784 → 64 → 10 architecture)
   <i>Figure 1: Cross-Entropy Loss convergence using custom Adam optimizer.</i>
 </p>
 
-### PyTorch Verification
-To prove the math is correct, I wrote a test suite that initializes this engine and a PyTorch model with identical weights, feeds them the same batch, and compares the gradients.
+### Gradient Verification (PyTorch)
+To prove the math is correct, I wrote a test suite that initializes this engine and a PyTorch model with identical weights, feeds the same batch, and compares the gradients.
 
 ```python
 # from tests/compare_torch.py
@@ -42,9 +42,10 @@ diff = np.abs(grad_custom - grad_pt).max()
 print(f"Max Gradient Difference: {diff:.9f}")
 # Output: Max Gradient Difference: 0.000000000
 ```
-### 1. Installation
-This package is lightweight. The core logic requires only numpy.
 
+## Getting Started 
+### 1. Installation
+The core enging requires only NumPy.
 ``` bash
 git clone [https://github.com/jmarbis1703/from_scratch_neural_network.git](https://github.com/jmarbis1703/from_scratch_neural_network.git)
 cd from_scratch_neural_network
@@ -61,14 +62,14 @@ Train the model on MNIST:
 ``` bash
 python -m final_project.cli
 ```
-### 3. Verify Math / Gradient Check
+### 3. Run Gradient Check
 Verify the backpropagation calculus:
 ``` bash
 pytest tests/compare_torch.py
 ```
 
-## Implementation Snippet: The Adam Step
-The optimizer logic was built to mirror the original Kingma & Ba paper:
+## Implementation Detail: The Adam Step
+The optimizer logic was built to mirror the original Kingma & Ba (2014):
 ``` python
 # from src/final_project/models/nn_scratch.py
 m[...] = self.b1 * m + (1.0 - self.b1) * dw
